@@ -139,7 +139,8 @@ LEFT JOIN
     r.BD = p.BD AND 
     r.Organizatsiya = p.Organizatsiya AND 
     r.RaschetniiSchet = p.RaschetniiSchet AND 
-    r.date_col = p.date_col 
+    r.date_col = p.date_col
+WHERE r.date_col>='2025-01-31'AND r.date_col<='2025-03-01'
 ORDER BY 
     r.BD, 
     r.Organizatsiya,
