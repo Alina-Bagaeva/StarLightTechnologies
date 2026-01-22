@@ -5,7 +5,6 @@ WITH calendar AS (
     FROM 
         numbers(dateDiff('day', toDate('2025-01-01'), today() + 1))
 ),
-
 -- Получаем уникальные комбинации БД, организации и расчетного счета из таблицы OstatkiDeneg2(таблица остатков по Депозитам)
 -- Если расчетный счет NULL, заменяем на 'Depozit'
 dim AS (
@@ -16,7 +15,6 @@ dim AS (
     FROM 
         OstatkiDeneg2 od 
 ),
-
 -- Создаем полную сетку: все комбинации dim × все даты из calendar
 -- Это нужно для того, чтобы были все даты для каждой комбинации БД-организация-счет
 full_grid AS (
@@ -30,7 +28,6 @@ full_grid AS (
     CROSS JOIN 
         calendar c  -- Декартово произведение: каждая запись dim с каждой датой
 ),
-
 -- Аналогично dim, но для другой таблицы - OstatkiDeneg (табица остатков по р/с)
 dim2 AS (
     SELECT DISTINCT 
@@ -40,7 +37,6 @@ dim2 AS (
     FROM 
         OstatkiDeneg od 
 ),
-
 -- Полная сетка для второй таблицы
 full_grid2 AS (
     SELECT 
@@ -53,7 +49,6 @@ full_grid2 AS (
     CROSS JOIN 
         calendar c
 ),
-
 -- Основной результат: заполняем остатки для каждой даты и комбинации
 -- Используем last_value для заполнения пропусков: берем последнее известное значение остатка
 result AS (
@@ -74,10 +69,8 @@ result AS (
         OstatkiDeneg2 od ON 
         DATE(od.DataOstatkaMesyats) = f.date_col AND  -- Связь по дате
         od.BD = f.BD AND 
-        od.Organizatsiya = f.Organizatsiya 
-    
+        od.Organizatsiya = f.Organizatsiya     
     UNION ALL 
-    
     -- Данные из второй таблицы (OstatkiDeneg)
     SELECT 
         f.date_col,
@@ -98,7 +91,6 @@ result AS (
         od.Organizatsiya = f.Organizatsiya AND 
         od.RaschetniiSchet = f.RaschetniiSchet
 ),
-
 -- CTE для обработки движения денежных средств (поступления и выплаты)
 postuplenia_viplaty AS (
     SELECT 
@@ -114,7 +106,6 @@ postuplenia_viplaty AS (
     FROM DvizhenieDS dd
     GROUP BY 1, 2, 3, 4  -- Группировка по дате, БД, организации и счету
 )
-
 -- Финальный запрос: объединяем остатки с движением денежных средств
 SELECT 
     r.date_col,
