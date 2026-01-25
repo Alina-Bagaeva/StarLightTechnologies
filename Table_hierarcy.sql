@@ -11,7 +11,6 @@ CREATE TABLE StarLightTechnologies.StatiDDS_Hierarchy (
 ORDER BY (full_path, StatyaID);
 
 INSERT INTO StarLightTechnologies.StatiDDS_Hierarchy
--- INSERT INTO StatiDDS_Hierarchy
 WITH gruppa AS (
     SELECT 
         s.Naimenovanie as Gruppa,
@@ -29,7 +28,6 @@ stati AS (
     FROM StatiDvizheniyaDenezhnykhSredstv s
     WHERE NOT s.EtoGruppa
 )
-select from (
 SELECT
     coalesce(g2.Gruppa, coalesce(g1.Gruppa, coalesce(g.Gruppa, st.Satya))) as root_folder,
     coalesce(g1.Gruppa, coalesce(g.Gruppa, st.Satya)) as folder,
