@@ -4,9 +4,7 @@ CREATE TABLE StarLightTechnologies.StatiDDS_Hierarchy (
     root_folder String,
     folder String,
     StatyaDDS String,
-    StatyaID UUID,
-    full_path Array(String),
-    level UInt8
+    StatyaID UUID
 ) ENGINE = MergeTree
 ORDER BY (full_path, StatyaID);
 
