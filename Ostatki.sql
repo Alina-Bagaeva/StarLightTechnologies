@@ -8,7 +8,7 @@ dim AS (
 	SELECT DISTINCT 
 		od.BD,
 		od.Organizatsiya,
-		case when od.EtoDepozit then '55 счёт' else od.RaschetniiSchet end as RaschetniiSchet
+		case when od.EtoDepozit then concat('55 счёт',' ',od.Organizatsiya) else od.RaschetniiSchet end as RaschetniiSchet
 	FROM 
 		StarLightTechnologies.OstatkiDeneg od 
 ),
@@ -28,7 +28,7 @@ ostatki as(
 		DATE(od.`ПериодМСК`) as date_col,
 		od.BD,
 		od.Organizatsiya,
-		coalesce(od.RaschetniiSchet,'55 счёт') as RaschetniiSchet,
+		coalesce(od.RaschetniiSchet,concat('55 счёт',' ',od.Organizatsiya)) as RaschetniiSchet,
         od.SummaOstatok 
 	from
 		StarLightTechnologies.OstatkiDeneg od
@@ -55,7 +55,7 @@ postuplenia_viplaty AS (
         date(dd.Period) AS date_col,
         dd.BD,
         dd.Organizatsiya,
-        case when dd.EtoDepozit then '55 счёт' else dd.RaschetniiSchet end as RaschetniiSchet,
+        case when dd.EtoDepozit then concat('55 счёт',' ',dd.Organizatsiya) else dd.RaschetniiSchet end as RaschetniiSchet,
         SUMIf(dd.Summa, dd.EtoPostuplenie) AS Postuplenie,
         SUMIf(dd.Summa, NOT dd.EtoPostuplenie) AS Viplata
     FROM StarLightTechnologies.DvizhenieDS dd

@@ -1,3 +1,5 @@
+TRUNCATE TABLE IF EXISTS StarLightTechnologies.StatiDDS_Hierarchy SYNC;
+
 SET enable_analyzer = 1;
 
 CREATE TABLE StarLightTechnologies.StatiDDS_Hierarchy (
