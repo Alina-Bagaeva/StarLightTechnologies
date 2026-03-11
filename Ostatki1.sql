@@ -41,6 +41,24 @@ ostatki as(
 	from
 		StarLightTechnologies.OstatkiDeneg od
 ),
+ostatki1 as(
+	select 
+		o.date_col,
+		o.BD,
+		o.Organizatsiya,
+		o.RaschetniiSchet,
+        sum(coalesce(o1.SummaOstatok,0)) as SummaOstatok_BEGIN,
+        sum(coalesce(o.SummaOstatok,0)) as SummaOstatok_END
+	from
+		ostatki o
+	left join 
+		ostatki o1 on 
+		o.prev_date=o1.date_col AND 
+		o.BD =o1.BD AND 
+		o.Organizatsiya =o1.Organizatsiya and 
+		o.RaschetniiSchet=o1.RaschetniiSchet
+	GROUP BY 1, 2, 3, 4
+),
 postuplenia_viplaty AS (
     SELECT 
         date(dd.PeriodMSK) AS date_col,
@@ -57,30 +75,28 @@ SELECT
 	f.BD as bd,
 	f.Organizatsiya as Organizatsiya,
 	f.RaschetniiSchet as RaschetniiSchet,
-	coalesce(o1.SummaOstatok,0) as SummaOstatok_BEGIN,
+	coalesce(o.SummaOstatok_BEGIN,0) as SummaOstatok_BEGIN,
 	coalesce(pv.Postuplenie, 0) as Postuplenie,
 	coalesce(pv.Viplata, 0) as Viplata,
-	coalesce(case
-		when o.date_col='2024-12-31' then pv.Postuplenie
-		else o.SummaOstatok
-		end,0) as SummaOstatok_END
+	coalesce(o.SummaOstatok_END,0) as SummaOstatok_END
 FROM 
 	full_grid f
 left JOIN 
-	ostatki o ON 
+	ostatki1 o ON 
 	o.date_col=f.date_col AND 
 	o.BD =f.BD AND 
 	o.Organizatsiya =f.Organizatsiya and 
 	o.RaschetniiSchet=f.RaschetniiSchet
-left join 
-	ostatki o1 on 
-	o.prev_date=o1.date_col AND 
-	o.BD =o1.BD AND 
-	o.Organizatsiya =o1.Organizatsiya and 
-	o.RaschetniiSchet=o1.RaschetniiSchet
 left join 
 	postuplenia_viplaty pv on
 	pv.date_col=f.date_col AND 
 	pv.BD =f.BD AND 
 	pv.Organizatsiya =f.Organizatsiya and 
 	pv.RaschetniiSchet=f.RaschetniiSchet
+order by 
+	f.date_col desc,
+	f.BD,
+	f.Organizatsiya,
+	f.RaschetniiSchet
+	
+	
